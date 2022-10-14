@@ -1,59 +1,60 @@
 ## Example
 
 ```
-module "hoge" {
-  source = "page-o/network/aws"
+module "glue_workflows" {
+  source = "page-o/glue-workflows/aws"
 
-  vpc = {
-    cidr_block = "172.16.0.0/16"
-    name       = "vpc"
+  workflow = {
+    name        = "${local.env}-${local.project}-glue-workflow"
+    description = "Sample"
   }
-  public_subnets = [
-    {
-      cidr = "172.16.0.0/24"
-      az   = "ap-northeast-1a"
-      name = "public-1a"
-    },
-    {
-      cidr = "172.16.4.0/24"
-      az   = "ap-northeast-1c"
-      name = "public-1c"
-    }
-  ]
-  public_subnets_route_table_name = "public-route-table"
-  private_subnets = [
-    {
-      cidr             = "172.16.32.0/24"
-      az               = "ap-northeast-1a"
-      name             = "private-1a"
-      route_table_name = "private-route-table-1a"
-    },
-    {
-      cidr             ="172.16.36.0/24"
-      az               = "ap-northeast-1c"
-      name             = "private-1c"
-      route_table_name = "private-route-table-1c"
-    }
-  ]
-  private_secondary_subnets = [
-    {
-      cidr = "172.16.64.0/24"
-      az   = "ap-northeast-1a"
-      name = "private-db-1a"
-    },
-    {
-      cidr = "172.16.68.0/24"
-      az   = "ap-northeast-1c"
-      name = "private-db-1c"
-    }
-  ]
-  private_secondary_subnets_route_table_name = "private-db-route-table"
-  gateway = {
-    igw_name = "internet-gateway"
-    ngw_names = [
-      "nat-gateway-1a",
-      "nat-gateway-1c"
+  event_trigger = {
+    name        = "${local.env}-${local.project}-event-trigger"
+    description = "Sample"
+  }
+  crawler_trigger = {
+    name        = "${local.env}-${local.project}-crawler-trigger"
+    description = "Sample"
+  }
+  catalog = {
+    database_name        = "${local.env}-${local.project}-database"
+    database_description = "Sample"
+    tables = [
+      {
+        name             = "hoges"
+        description      = "Sample"
+        storage_location = "s3://${module.source_bucket.name}/hoges/"
+        ser_de_name      = "hoges"
+      },
+      {
+        name             = "fugas"
+        description      = "Sample"
+        storage_location = "s3://${module.source_bucket.name}/fugas/"
+        ser_de_name      = "fugas"
+      }
     ]
   }
+  crawler = {
+    name                  = "${local.env}-${local.project}-crawler"
+    description           = "Sample"
+    role_arn              = module.workflow_role.arn
+    catalog_target_tables = ["hoges", "fugas"]
+  }
+  jobs = [
+    {
+      name              = "${local.env}-${local.project}-hoges-job"
+      description       = "Sample"
+      script_object_key = local.job_script_object_key.hoge
+      default_arguments = local.default_arguments
+    },
+    {
+      name              = "${local.env}-${local.project}-fugas-job"
+      description       = "Sample"
+      script_object_key = local.job_script_object_key.fuga
+      default_arguments = local.default_arguments
+    }
+  ]
+  job_role_arn        = module.workflow_role.arn
+  job_tmp_bucket_name = module.scripts_bucket.name
 }
 ```
