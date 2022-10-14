@@ -7,6 +7,7 @@ variable "workflow" {
 }
 
 variable "event_trigger" {
+  description = "Event Trigger"
   type = object({
     name        = string
     description = string
@@ -14,6 +15,7 @@ variable "event_trigger" {
 }
 
 variable "crawler_trigger" {
+  description = "Crawler Trigger"
   type = object({
     name        = string
     description = string
@@ -21,6 +23,7 @@ variable "crawler_trigger" {
 }
 
 variable "catalog" {
+  description = "Catalog"
   type = object({
     database_name        = string
     database_description = string
@@ -38,6 +41,7 @@ variable "catalog" {
 }
 
 variable "crawler" {
+  description = "Crawler"
   type = object({
     name                  = string
     description           = string
@@ -47,6 +51,7 @@ variable "crawler" {
 }
 
 variable "jobs" {
+  description = "Jobs"
   type = list(object({
     name                = string
     description         = string
@@ -63,9 +68,11 @@ variable "jobs" {
 }
 
 variable "job_role_arn" {
-  type = string
+  description = "Job Role ARN"
+  type        = string
 }
 
 variable "job_tmp_bucket_name" {
-  type = string
+  description = "Job Temporary Bucket Name"
+  type        = string
 }
